@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { stringify } from "uuid";
 
 import {
   InputContainer,
@@ -20,7 +21,10 @@ const currentMonth = currentDate.getMonth() + 1;
 const currentDay = currentDate.getDate();
 var formattedNumber = ("0" + currentDay).slice(-2);
 currentDate = `${currentYear}-${currentMonth}-${formattedNumber}`;
-console.log(currentDate);
+
+const firstNumber = Math.floor(Math.random() * 100);
+const secondNumber = Math.floor(Math.random() * 100);
+const result = firstNumber + secondNumber;
 
 class FormSubmit extends Component {
   state = {
@@ -37,6 +41,8 @@ class FormSubmit extends Component {
     select: "",
     selectErr: false,
     isSubmit: false,
+    captcha: 0,
+    captchaErr: false,
   };
 
   onChangeName = (event) => {
@@ -139,35 +145,27 @@ class FormSubmit extends Component {
     }
   };
 
+  onChangeCaptcha = (e) => {
+    this.setState({ captcha: e.target.value });
+  };
+
   onSuccessfulSubmit = () => {
-    const {
-      nameErr,
-      emailErr,
-      numberErr,
-      dateErr,
-      timeErr,
-      selectErr,
-      name,
-      email,
-      number,
-      date,
-      time,
-      select,
-    } = this.state;
-    // if (nameErr === false && emailErr === false && numberErr === false && dateErr === false && timeErr === false && selectErr === false){
-    //   this.setState({isSubmit:true})
-    // }
+    const { name, email, number, date, time, select, captcha } = this.state;
+
     if (
       name.length !== 0 &&
       email.length !== 0 &&
       number.length !== 0 &&
       date.length !== 0 &&
       time.length !== 0 &&
-      select.length !== 0
+      select.length !== 0 &&
+      parseInt(captcha) === result
     ) {
       this.setState({ isSubmit: true });
+      localStorage.setItem("data", JSON.stringify(this.state));
     } else {
       this.setState({ isSubmit: false });
+      this.setState({ captchaErr: true });
     }
   };
 
@@ -176,7 +174,6 @@ class FormSubmit extends Component {
     this.validateFormData();
     this.onSuccessfulSubmit();
   };
-
   render() {
     const {
       nameErr,
@@ -192,6 +189,7 @@ class FormSubmit extends Component {
       select,
       selectErr,
       isSubmit,
+      captchaErr,
     } = this.state;
 
     return (
@@ -224,13 +222,19 @@ class FormSubmit extends Component {
                   {emailErr && <ErrElement>Required*</ErrElement>}
                 </div>
                 <div className="inputContainer">
-                  <div style={{display:"flex", justifyContent:"center", alignItems:"center", gap:5}}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 5,
+                    }}
+                  >
                     <p>+91</p>
                     <InputElement
                       // required
                       type="number"
-                      placeholder="Enter Phone
-              Number"
+                      placeholder="Enter Phone Number"
                       value={number}
                       onBlur={this.onBlurNumber}
                       onChange={this.onChangeNumber}
@@ -342,9 +346,16 @@ class FormSubmit extends Component {
                     )}
                   </div>
                 </div>
-                <div>
-                  <p>42 <span>+</span> 42 <span>=</span></p>
-                  <InputElement type="number"></InputElement>
+                <div style={{ display: "flex", gap: 10, position: "relative" }}>
+                  <p style={{ display: "flex" }}>
+                    {firstNumber} <span>+</span> {secondNumber} <span>=</span>
+                  </p>
+                  <InputElement
+                    type="number"
+                    onChange={this.onChangeCaptcha}
+                    required
+                  ></InputElement>
+                  {captchaErr && <ErrElement>Please fill correctly</ErrElement>}
                 </div>
               </InputContainer>
               <BtnElement type="submit">Book Appointment</BtnElement>
