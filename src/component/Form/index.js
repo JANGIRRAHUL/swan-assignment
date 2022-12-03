@@ -19,8 +19,13 @@ let currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const currentMonth = currentDate.getMonth() + 1;
 const currentDay = currentDate.getDate();
+const currentHrs = currentDate.getHours();
+const currentMin = currentDate.getMinutes();
+const currentTime = `${currentHrs}:${currentMin}`
 var formattedNumber = ("0" + currentDay).slice(-2);
 currentDate = `${currentYear}-${currentMonth}-${formattedNumber}`;
+
+
 
 const firstNumber = Math.floor(Math.random() * 100);
 const secondNumber = Math.floor(Math.random() * 100);
@@ -36,7 +41,7 @@ class FormSubmit extends Component {
     numberErr: false,
     date: currentDate,
     dateErr: false,
-    time: "",
+    time: currentTime,
     timeErr: false,
     select: "",
     selectErr: false,
@@ -191,7 +196,7 @@ class FormSubmit extends Component {
       isSubmit,
       captchaErr,
     } = this.state;
-
+console.log(time);
     return (
       <>
         <div className="container">
@@ -353,7 +358,7 @@ class FormSubmit extends Component {
                   <InputElement
                     type="number"
                     onChange={this.onChangeCaptcha}
-                    required
+                    // required
                   ></InputElement>
                   {captchaErr && <ErrElement>Please fill correctly</ErrElement>}
                 </div>
